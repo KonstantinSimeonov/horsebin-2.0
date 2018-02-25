@@ -6,9 +6,12 @@ User json
     password Text Maybe
     UniqueUser username
     deriving Typeable
+Folder json
+    contents [Paste]
 Paste json
     content Text
     lang Text Maybe
+    path Text Maybe
     public Bool
     authorId UserId Maybe
     deriving Typeable

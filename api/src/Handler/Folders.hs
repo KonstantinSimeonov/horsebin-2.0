@@ -5,10 +5,10 @@ module Handler.Folders where
     getFoldersR :: Handler Value
     getFoldersR = do
         folders <- runDB $ selectList [] []
-        returnJson (folders :: [Entity Paste])
+        returnJson (folders :: [Entity Folder])
     
     postFoldersR :: Handler Value
     postFoldersR = do
-        body <- requireJsonBody :: Handler Paste
+        body <- requireJsonBody :: Handler Folder
         folderId <- runDB $ insert body
         returnJson folderId
