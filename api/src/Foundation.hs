@@ -58,7 +58,10 @@ instance Yesod App where
     --     case appRoot $ appSettings app of
     --         Nothing -> getApprootText guessApproot app req
     --         Just root -> root
-
+    approot = ApprootRequest $ \app req ->
+        case appRoot $ appSettings app of
+            Nothing -> getApprootText guessApproot app req
+            Just root -> root
     -- Yesod Middleware allows you to run code before and after each handler function.
     -- The defaultYesodMiddleware adds the response header "Vary: Accept, Accept-Language" and performs authorization checks.
     -- Some users may also want to add the defaultCsrfMiddleware, which:
