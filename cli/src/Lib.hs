@@ -8,6 +8,7 @@ module Lib
     , postPaste
     , find
     , mkPaste
+    , shave
     ) where
 
 import Network.Wreq
@@ -16,6 +17,7 @@ import Data.Aeson
 import Data.Text (Text, split, pack, unpack)
 import GHC.Generics (Generic)
 import Data.Maybe
+import qualified Data.Text as T
 import Data.Text.IO as Text
 import Data.Text.Encoding (decodeUtf8)
 import Data.ByteString.Lazy (toStrict)
@@ -44,6 +46,13 @@ mkPaste (content, path) = Paste content lang (Just path) True
                     ""  -> Nothing
                     ext -> Just ext
 
+shave :: String -> String -> String
+shave "" ys = ys
+shave _ ""  = ""
+shave (x:xs) (y:ys)
+            | x == y = shave xs ys
+            | otherwise = ys
+
 postPaste :: String -> IO Text
 postPaste path = do
     isPathDir <- doesDirectoryExist path
@@ -51,12 +60,12 @@ postPaste path = do
                     then do
                         files <- find path
                         contents <- mapM Text.readFile files
-                        return $ zip contents $ map pack files
+                        return $ zip contents files
                     else do
                         txt <- Text.readFile path
-                        return [(txt, pack path)]
-    let pastes = map mkPaste contents
-    let folder = toJSON $ Folder pastes
+                        return [(txt, path)]
+    let pastes = map (mkPaste . (\(c, p) -> (c, pack $ '.':(shave path p)))) contents
+        folder = toJSON $ Folder pastes
     r <- post "http://localhost:3000/folders" folder
     return . decodeUtf8 . toStrict $ r ^. responseBody
 
