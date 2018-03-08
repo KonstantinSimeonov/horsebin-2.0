@@ -2,14 +2,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveAnyClass #-}
 
-module Lib
-    ( someFunc
-    , getFolders
-    , postPaste
-    , find
-    , mkPaste
-    , shave
-    ) where
+module Lib where
 
 import Network.Wreq
 import Control.Lens
