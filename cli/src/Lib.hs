@@ -57,7 +57,7 @@ postPaste path = do
                     else do
                         txt <- Text.readFile path
                         return [(txt, path)]
-    let pastes = map (mkPaste . (\(c, p) -> (c, pack $ '.':(shave path p)))) contents
+    let pastes = map (mkPaste . (\(c, p) -> (c, pack $ '.' : shave path p))) contents
         folder = toJSON $ Folder pastes
     r <- post "http://localhost:3000/folders" folder
     return . decodeUtf8 . toStrict $ r ^. responseBody
@@ -72,6 +72,19 @@ find path = do
     let dirs = map fst $ filter snd stuff
     ofDirs <- concat <$> mapM find dirs
     return $ files ++ ofDirs
+
+clone :: FilePath -> Folder -> IO ()
+clone root (Folder ps) = do
+            let paths = map (pasteDir . fromMaybe undefined . path) ps
+            mapM_ (\((d, fp), c) -> createDirectoryIfMissing True d >> Text.writeFile fp c) $ zip paths (map content ps)
+            where
+                pasteDir p = (root ++ "/" ++ T.unpack (T.dropWhileEnd (/= '/') p), root ++ "/" ++ T.unpack p)
+
+clonePaste :: String -> FilePath -> IO ()
+clonePaste pid into = do
+    r <- get $ "http://localhost:3000/folders/" ++ pid
+    let folder = fromMaybe undefined . decode $ r ^. responseBody :: Folder
+    clone into folder
 
 someFunc :: IO ()
 someFunc = Text.putStrLn "someFunc"

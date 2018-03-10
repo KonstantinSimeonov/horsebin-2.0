@@ -7,5 +7,4 @@
 
 /comments                   CommentR    POST
 /folders                    FoldersR    GET POST
-/folders/#PasteId           FolderR     GET
-
+/folders/#FolderId          FolderR     GET

@@ -2,7 +2,7 @@ module Handler.Folder where
 
     import Import
 
-    getFolderR :: PasteId -> Handler Value
+    getFolderR :: FolderId -> Handler Value
     getFolderR folderId = do
-        folder <- runDB $ selectFirst [PasteId ==. folderId] []
+        folder <- runDB $ get folderId
         returnJson folder
