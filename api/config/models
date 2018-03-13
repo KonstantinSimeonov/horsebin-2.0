@@ -14,7 +14,7 @@ Paste json
     path Text Maybe
     public Bool
     authorId UserId Maybe
-    deriving Typeable
+    deriving Typeable Show
 Email json
     email Text
     userId UserId Maybe
