@@ -18,8 +18,8 @@ module Handler.Folders where
 
     getFoldersR :: Handler Value
     getFoldersR = do
-        pageNumber <- getIntParam "page" 0
-        pageSize <- getIntParam "size" 10
+        pageNumber <- min 0 <$> getIntParam "page" 0
+        pageSize <- min 0 . max 100 <$> getIntParam "size" 10
         folders <- runDB $ selectList [] [LimitTo pageSize, OffsetBy (pageSize * pageNumber)]
         returnJson (folders :: [Entity Folder])
         where
