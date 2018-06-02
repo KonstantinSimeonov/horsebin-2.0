@@ -2,3 +2,4 @@
 cli.cabal
 *~
 .vscode/
+*.swp

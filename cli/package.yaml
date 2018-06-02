@@ -44,6 +44,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - cli
+    - optparse-applicative
 
 tests:
   cli-test:
