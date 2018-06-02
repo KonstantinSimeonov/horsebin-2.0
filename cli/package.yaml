@@ -1,4 +1,4 @@
-name:                cli
+name:                horsebin-cli
 version:             0.1.0.0
 github:              "githubuser/cli"
 license:             BSD3
@@ -43,7 +43,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - cli
+    - horsebin-cli
     - optparse-applicative
 
 tests:
@@ -55,4 +55,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - cli
+    - horsebin-cli

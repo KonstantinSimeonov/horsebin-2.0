@@ -1,4 +1,4 @@
-name:    api
+name:    horsebin-api
 version: "0.0.0"
 
 dependencies:
@@ -77,7 +77,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - api
+    - horsebin-api
     when:
     - condition: flag(library-only)
       buildable: false
@@ -89,7 +89,7 @@ tests:
     source-dirs: test
     ghc-options: -Wall
     dependencies:
-    - api
+    - horsebin-api
     - hspec >=2.0.0
     - yesod-test
 
