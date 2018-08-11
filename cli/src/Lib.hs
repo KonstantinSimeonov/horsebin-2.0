@@ -24,7 +24,7 @@ data Paste = Paste
                 , public :: Bool
                 } deriving (Show, Generic, ToJSON, FromJSON)
 
-data Folder = Folder { contents :: [Paste] } deriving (Show, Generic, ToJSON, FromJSON)
+newtype Folder = Folder { contents :: [Paste] } deriving (Show, Generic, ToJSON, FromJSON)
 
 getFolders :: IO [Folder]
 getFolders = do
@@ -86,5 +86,3 @@ clonePaste pid into = do
     let folder = fromMaybe undefined . decode $ r ^. responseBody :: Folder
     clone into folder
 
-someFunc :: IO ()
-someFunc = Text.putStrLn "someFunc"
