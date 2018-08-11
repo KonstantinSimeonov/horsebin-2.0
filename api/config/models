@@ -8,12 +8,13 @@ User json
     deriving Typeable
 Folder json
     contents [Paste]
+    name Text Maybe
+    username Text Maybe
 Paste json
     content Text
     lang Text Maybe
     path Text Maybe
     public Bool
-    authorId UserId Maybe
     deriving Typeable Show
 Email json
     email Text

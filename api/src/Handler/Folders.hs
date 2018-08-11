@@ -27,7 +27,7 @@ module Handler.Folders where
 
     postFoldersR :: Handler Value
     postFoldersR = do
-        folder@(Folder contents) <- requireJsonBody :: Handler Folder
+        folder@(Folder contents _ _) <- requireJsonBody :: Handler Folder
         Import.print contents
         let hasBadPaths = Import.any (isBadPath . fromMaybe "./" . pastePath) contents
         folderId <- runDB $ insert folder
