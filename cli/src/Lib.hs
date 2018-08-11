@@ -53,8 +53,8 @@ postPaste path = do
     contents <- if isPathDir
                     then do
                         files <- find path
-                        contents <- catMaybes <$> mapM tryReadFile files
-                        pure $ zip contents (map (\p -> pack $ '.' : shave path p) files)
+                        contents <- mapM tryReadFile files
+                        pure . map (\(Just x, p) -> (x, p)) $ filter (isJust . fst) $ zip contents (map (\p -> pack $ '.' : shave path p) files)
                     else do
                         txt <- tryReadFile path
                         pure $ case txt of
