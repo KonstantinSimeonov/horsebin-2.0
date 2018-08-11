@@ -20,7 +20,7 @@ module Handler.Folders where
     getFoldersR = do
         pageNumber <- min 0 <$> getIntParam "page" 0
         pageSize <- min 0 . max 100 <$> getIntParam "size" 10
-        folders <- runDB $ selectList [] [LimitTo pageSize, OffsetBy (pageSize * pageNumber)]
+        folders <- runDB $ selectList [] [Desc FolderId, LimitTo pageSize, OffsetBy (pageSize * pageNumber)]
         returnJson (folders :: [Entity Folder])
         where
             getIntParam paramName defaultValue = (fst . fromRight (defaultValue, "") . Read.decimal . fromMaybe "0") <$> lookupGetParam paramName
@@ -31,6 +31,5 @@ module Handler.Folders where
         Import.print contents
         let hasBadPaths = Import.any (isBadPath . fromMaybe "./" . pastePath) contents
         folderId <- runDB $ insert folder
-        if hasBadPaths then do
-                            sendStatusJSON status400 $ object ["message" .= ("Bad path in paste" :: T.Text)]
+        if hasBadPaths then sendStatusJSON status400 $ object ["message" .= ("Bad path in paste" :: T.Text)]
                        else returnJson folderId
