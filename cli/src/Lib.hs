@@ -60,7 +60,8 @@ postPaste path = do
     let pastes = map mkPaste contents
         folder = toJSON $ Folder pastes
     r <- post "http://localhost:3000/folders" folder
-    return . decodeUtf8 . toStrict $ r ^. responseBody
+    let pasteId = T.tail . T.init . decodeUtf8 . toStrict $  r ^. responseBody
+    pure pasteId
 
 find :: FilePath -> IO [FilePath]
 find path = do
