@@ -25,7 +25,7 @@ data Paste = Paste
                 , public :: Bool
                 } deriving (Show, Generic, ToJSON, FromJSON)
 
-newtype Folder = Folder { contents :: [Paste] } deriving (Show, Generic, ToJSON, FromJSON)
+data Folder = Folder { contents :: [Paste], name :: T.Text } deriving (Show, Generic, ToJSON, FromJSON)
 
 getFolders :: IO [Folder]
 getFolders = do
@@ -47,8 +47,8 @@ shave (x:xs) (y:ys)
             | x == y = shave xs ys
             | otherwise = ys
 
-postPaste :: String -> IO Text
-postPaste path = do
+postPaste :: String -> String -> IO Text
+postPaste path name = do
     isPathDir <- doesDirectoryExist path
     contents <- if isPathDir
                     then do
@@ -61,7 +61,7 @@ postPaste path = do
                                 Nothing -> []
                                 Just x  -> [(x, pack path)]
     let pastes = map mkPaste contents
-        folder = toJSON $ Folder pastes
+        folder = toJSON $ Folder pastes (T.pack name)
     r <- post "http://localhost:3000/folders" folder
     let pasteId = T.tail . T.init . decodeUtf8 . toStrict $  r ^. responseBody
     pure pasteId
@@ -81,7 +81,7 @@ find path = do
     return $ files ++ ofDirs
 
 clone :: FilePath -> Folder -> IO ()
-clone root (Folder ps) = do
+clone root (Folder ps _) = do
             let paths = map (pasteDir . fromMaybe undefined . path) ps
             mapM_ (\((d, fp), c) -> createDirectoryIfMissing True d >> Text.writeFile fp c) $ zip paths (map content ps)
             where

@@ -12,6 +12,7 @@ data CloneOptions = CloneOptions
 
 data ExportOptions = ExportOptions
         { src :: String
+        , name :: String
         }
 
 data CommandOptions = Clone CloneOptions | Export ExportOptions
@@ -21,7 +22,8 @@ cliOptsParser = subparser ( command "clone" (info (cloneOpts <**> helper) (fullD
 
 exportOpts :: Parser CommandOptions
 exportOpts = Export <$> (ExportOptions
-        <$> argument str (metavar "FILE OR DIRECTORY" <> showDefault <> value "" <> help "File or directory to export"))
+        <$> argument str (metavar "FILE OR DIRECTORY" <> showDefault <> value "" <> help "File or directory to export")
+        <*> argument str (metavar "TEXT" <> showDefault <> value "" <> help "File or directory to export"))
 
 cloneOpts :: Parser CommandOptions
 cloneOpts = Clone <$> (CloneOptions
@@ -34,5 +36,5 @@ main :: IO ()
 main =  main' =<< execParser opts
         where
                 main' (Clone (CloneOptions pid to)) = clonePaste pid to
-                main' (Export (ExportOptions src)) = putStrLn . T.unpack =<< postPaste src
+                main' (Export (ExportOptions src name)) = putStrLn . T.unpack =<< postPaste src name
 
