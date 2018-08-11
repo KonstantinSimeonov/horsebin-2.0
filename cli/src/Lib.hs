@@ -9,6 +9,7 @@ import Control.Lens
 import Data.Aeson
 import Data.Text (Text, split, pack, unpack)
 import GHC.Generics (Generic)
+import Control.Exception
 import Data.Maybe
 import qualified Data.Text as T
 import Data.Text.IO as Text
@@ -52,16 +53,21 @@ postPaste path = do
     contents <- if isPathDir
                     then do
                         files <- find path
-                        contents <- mapM Text.readFile files
+                        contents <- catMaybes <$> mapM tryReadFile files
                         pure $ zip contents (map (\p -> pack $ '.' : shave path p) files)
                     else do
-                        txt <- Text.readFile path
-                        pure [(txt, pack path)]
+                        txt <- tryReadFile path
+                        pure $ case txt of
+                                Nothing -> []
+                                Just x  -> [(x, pack path)]
     let pastes = map mkPaste contents
         folder = toJSON $ Folder pastes
     r <- post "http://localhost:3000/folders" folder
     let pasteId = T.tail . T.init . decodeUtf8 . toStrict $  r ^. responseBody
     pure pasteId
+    where
+        tryReadFile p = let handle = const $ pure Nothing :: SomeException -> IO (Maybe T.Text)
+                        in catch (Just <$> Text.readFile p) handle
 
 find :: FilePath -> IO [FilePath]
 find path = do
