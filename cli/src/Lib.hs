@@ -53,11 +53,11 @@ postPaste path = do
                     then do
                         files <- find path
                         contents <- mapM Text.readFile files
-                        return $ zip contents files
+                        pure $ zip contents (map (\p -> pack $ '.' : shave path p) files)
                     else do
                         txt <- Text.readFile path
-                        return [(txt, path)]
-    let pastes = map (mkPaste . (\(c, p) -> (c, pack $ '.' : shave path p))) contents
+                        pure [(txt, pack path)]
+    let pastes = map mkPaste contents
         folder = toJSON $ Folder pastes
     r <- post "http://localhost:3000/folders" folder
     return . decodeUtf8 . toStrict $ r ^. responseBody
